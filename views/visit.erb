@@ -37,17 +37,17 @@
       <div class="form-group">
         <label>Ваш парикмахер</label>
         <select name="barber" class="form-control">
-            <option>1. Jessie Pinkman</option>
-            <option>2. Wolter White</option>
-            <option>3. Gas Fring</option>
+            <option <%= @barber == '1. Jessie Pinkman' ? 'selected' : '' %> >1. Jessie Pinkman</option>
+            <option <%= @barber == '2. Wolter White' ? 'selected' : '' %> >2. Wolter White</option>
+            <option <%= @barber == '3. Gas Fring' ? 'selected' : '' %> >3. Gas Fring</option>
             <option>4.  - vacancy -</option>
             <option>5.  - vacancy -</option>
         </select>
       </div>
 
-      <div>
+      <div class="form-group">
             <label>Выберите цвет </label>
-            <select name="colorpicker">
+            <select id="color" name="color">
               <option value="#7bd148">Green</option>
               <option value="#5484ed">Bold blue</option>
               <option value="#a4bdfc">Blue</option>
@@ -62,9 +62,7 @@
               <option value="#e1e1e1">Gray</option>
             </select>  
       </div>
-
-//        $('select[name="colorpicker"]').simplecolorpicker();
-        
+         
       <button type="submit" class="btn btn-primary"> Записаться </button>
 
     </form>
