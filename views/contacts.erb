@@ -1,0 +1,30 @@
+<html>
+<head>
+    
+</head>
+
+<body>
+    <h2>Написать в "Barber Shop"</h2>
+    <p>Оставьте сообщение, мы свяжемся с Вами ...</p>
+
+    <form role="form" method="POST">
+
+        <div class="form-group"> 
+            <textarea name="message_user" class="form-control" rows="3"> </textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Укажите Ваш Телефон или Email адрес</label>
+            <input name="user_mail" type="text" class="form-control" placeholder="mail@mail.ru для ответа:" value="<%= @user_mail %>">
+        </div>
+
+        <div class="form-group">
+            <label>Укажите как к Вам обращатся</label>
+            <input name="user_name" type="text" class="form-control" placeholder="Иван Петрович" value="<%= @user_name %>">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Отправить</button>
+
+    </form>
+</body>
+</html>
