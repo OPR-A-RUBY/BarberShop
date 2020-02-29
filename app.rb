@@ -132,4 +132,6 @@ post '/contacts' do
     erb :message
 end
 
-
+get '/showusers' do
+  "Hello World"
+end

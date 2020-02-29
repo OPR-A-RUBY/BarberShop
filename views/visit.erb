@@ -11,7 +11,7 @@
 
         $(function() {
             $('#color').simplecolorpicker();
-            // $('#datetimepicker').datetimepicker();
+            $('#datetimepicker').datetimepicker();
             // Тут я могу написать любой javascript код, который исполнится
             // после загрузки всей страницы.
         })
@@ -32,7 +32,7 @@
 
       <div class="form-group">
         <label>Введите дату и время визита</label>
-        <input name= "date_time" type="text" class="form-control" placeholder="12.03.2020 - 10:00" value="<%= @date_time %>">
+        <input id="datetimepicker" name= "date_time" type="text" class="form-control" placeholder="12.03.2020 - 10:00" value="<%= @date_time %>">
       </div>
       
       <div class="form-group">
