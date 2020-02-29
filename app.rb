@@ -4,31 +4,32 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'sqlite3'
 
+def get_db
+    return SQLite3::Database.new 'BarberShop.db'
+end
+
 configure do
-    @db = SQLite3::Database.new 'BarberShop.db'
-    @db.execute 'CREATE TABLE IF NOT EXISTS 
+    db = get_db
+    db.execute 'CREATE TABLE IF NOT EXISTS 
         "db_t_visit" 
         (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             "user_name" TEXT,
             "phone" TEXT,
             "data_time" TEXT,
-            "barber" TEXT
+            "barber" TEXT,
+            "color" TEXT
         )'
 
-    @db.execute 'CREATE TABLE IF NOT EXISTS 
-        "db_t_contacts" 
-        (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-            "user_name" TEXT NOT NULL,
-            "user_mail" TEXT,
-            "message_user" TEXT
-        )'
+    # db.execute 'CREATE TABLE IF NOT EXISTS 
+    #     "db_t_contacts" 
+    #     (
+    #         "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    #         "user_name" TEXT NOT NULL,
+    #         "user_mail" TEXT,
+    #         "message_user" TEXT
+    #     )'
 end    
-
-# rescue Exception => e
-#    
-# end
 
 get '/' do
     erb "Hello! <a href=\"https://github.com/bootstrap-ruby/sinatra-bootstrap\">Original</a> pattern has been modified for <a href=\"http://rubyschool.us/\">Ruby School</a>"
@@ -71,14 +72,27 @@ post '/visit' do
     
     @title = 'Спасибо!'
     @message = "Спасибо вам, #{@user_name}, будем ждать Вас."
-
-    db = SQLite3::Database.new 'BarberShop.db'
-    
-        db.execute "INSERT INTO db_t_visit (user_name, phone, data_time, barber) VALUES ('#{@user_name}', '#{@phone}', '#{@date_time}', '#{@barber}')"
- 
-    db.close
+  
+    db = get_db
+    db.execute 'INSERT INTO db_t_visit 
+        (
+            user_name, 
+            phone, 
+            data_time, 
+            barber,
+            color
+        ) 
+        VALUES ( ?, ?, ?, ?, ?)', 
+        [
+            @user_name, 
+            @phone, 
+            @date_time, 
+            @barber,
+            @color
+        ]
 
     erb :message
+
 end
 
 get '/contacts' do
@@ -109,11 +123,11 @@ post '/contacts' do
     @title = 'Ваше обращение доставлено!'
     @message = "Спасибо за обращение. Если оно требует ответа, мы постараемся связаться с Вами в бижайшее время."
 
-    db = SQLite3::Database.new 'BarberShop.db'
+    # db = SQLite3::Database.new 'BarberShop.db'
     
-        db.execute "INSERT INTO db_t_contacts (user_name, user_mail, message_user) VALUES ('#{@user_name}', '#{@user_mail}', '#{@message_user}')"
+    #     db.execute "INSERT INTO db_t_contacts (user_name, user_mail, message_user) VALUES ('#{@user_name}', '#{@user_mail}', '#{@message_user}')"
  
-    db.close
+    # db.close
 
     erb :message
 end
