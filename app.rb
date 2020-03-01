@@ -147,10 +147,13 @@ end
 get '/showusers' do 
       
     db = get_db
-    db.execute 'SELECT * FROM db_t_visit' do |row|
-        puts "#{row['user_name']} \t #{row['phone']}"
-    end
-    db.close
+    
+    @result = db.execute 'SELECT * FROM db_t_visit'
+
+    # db.execute 'SELECT * FROM db_t_visit' do |row|
+    #     puts "#{row['user_name']} \t #{row['phone']}"
+    # end
 
     erb :showusers
+    # db.close
 end
