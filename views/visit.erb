@@ -38,11 +38,13 @@
       <div class="form-group">
         <label>Ваш парикмахер</label>
         <select name="barber" class="form-control">
-            <option <%= @barber == '1. Jessie Pinkman' ? 'selected' : '' %> >1. Jessie Pinkman</option>
-            <option <%= @barber == '2. Wolter White' ? 'selected' : '' %> >2. Wolter White</option>
-            <option <%= @barber == '3. Gas Fring' ? 'selected' : '' %> >3. Gas Fring</option>
-            <option>4.  - vacancy -</option>
-            <option>5.  - vacancy -</option>
+
+          <!-- Здесь @barbers - это хеш, в которм все записи и в каждой записи все поля,
+                     item - это тоже хеш, в котором одна запись и все поля этой записи -->
+          <% @barbers.each do |item| %>
+              <option <%= @barber == item['barber_name'] ? 'selected' : '' %> ><%= item['barber_name'] %> </option>
+          <% end %>
+  
         </select>
       </div>
 

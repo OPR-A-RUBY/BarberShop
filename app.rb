@@ -22,6 +22,11 @@ def seed_db db, name_arr
     end    
 end    
 
+before do
+    db = get_db
+    @barbers = db.execute 'SELECT * FROM db_t_barbers'
+end
+
 configure do
     db = get_db
 
@@ -115,7 +120,7 @@ post '/visit' do
             @date_time, 
             @barber,
             @color
-        ]
+        ]    
     db.close
 
     erb :message
@@ -175,10 +180,6 @@ get '/showusers' do
     
     @result = db.execute 'SELECT * FROM db_t_visit ORDER BY id DESC'
 
-    # db.execute 'SELECT * FROM db_t_visit' do |row|
-    #     puts "#{row['user_name']} \t #{row['phone']}"
-    # end
-
     erb :showusers
-    # db.close
+    db.close
 end
