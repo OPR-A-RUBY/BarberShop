@@ -5,7 +5,9 @@ require 'sinatra/reloader'
 require 'sqlite3'
 
 def get_db
-    return SQLite3::Database.new 'BarberShop.db'
+    db = SQLite3::Database.new 'BarberShop.db'
+    db.results_as_hash = true
+    return db
 end
 
 configure do
@@ -21,14 +23,15 @@ configure do
             "color" TEXT
         )'
 
-    # db.execute 'CREATE TABLE IF NOT EXISTS 
-    #     "db_t_contacts" 
-    #     (
-    #         "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    #         "user_name" TEXT NOT NULL,
-    #         "user_mail" TEXT,
-    #         "message_user" TEXT
-    #     )'
+    db.execute 'CREATE TABLE IF NOT EXISTS 
+        "db_t_contacts" 
+        (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            "user_name" TEXT NOT NULL,
+            "user_mail" TEXT,
+            "message_user" TEXT
+        )'
+    db.close    
 end    
 
 get '/' do
@@ -67,9 +70,7 @@ post '/visit' do
         end
     end
 
-#    @error = hh.select {|key,_| params[key] == ""}.values.join(",")
-#    return erb :visit if @error != ''
-    
+
     @title = 'Спасибо!'
     @message = "Спасибо вам, #{@user_name}, будем ждать Вас."
   
@@ -90,6 +91,7 @@ post '/visit' do
             @barber,
             @color
         ]
+    db.close
 
     erb :message
 
@@ -123,15 +125,25 @@ post '/contacts' do
     @title = 'Ваше обращение доставлено!'
     @message = "Спасибо за обращение. Если оно требует ответа, мы постараемся связаться с Вами в бижайшее время."
 
-    # db = SQLite3::Database.new 'BarberShop.db'
-    
-    #     db.execute "INSERT INTO db_t_contacts (user_name, user_mail, message_user) VALUES ('#{@user_name}', '#{@user_mail}', '#{@message_user}')"
- 
-    # db.close
+    db = get_db
+    db.execute 'INSERT INTO db_t_contacts 
+        (
+            user_name, 
+            user_mail, 
+            message_user
+        ) 
+        VALUES ( ?, ?, ?)', 
+        [
+            @user_name, 
+            @user_mail, 
+            @message_user
+        ]
+    db.close
 
     erb :message
 end
 
-get '/showusers' do
-  "Hello World"
+
+get '/showusers' do 
+    erb "Hello World!"
 end
