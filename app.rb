@@ -145,5 +145,12 @@ end
 
 
 get '/showusers' do 
-    erb "Hello World!"
+      
+    db = get_db
+    db.execute 'SELECT * FROM db_t_visit' do |row|
+        puts "#{row['user_name']} \t #{row['phone']}"
+    end
+    db.close
+
+    erb :showusers
 end
