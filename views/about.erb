@@ -6,5 +6,27 @@
 <body>
 	<h2>О нас</h2>
 	<p>Мы работаем для Вас!</p>
+
+<div class="bs-example" data-example-id="bordered-table">
+	    <table class="table table-bordered">
+	      
+	      <thead>
+	        <tr>
+	          <th>Номер</th>
+			  <th>Парикмахер</th>
+	        </tr>
+	      </thead>
+	      
+	      <tbody>
+	      	<% @barbers.each do |row| %>
+	        <tr>
+	          <td><%= row['id'] %></td>
+	          <td><%= row['barber_name'] %></td>
+	        </tr>
+	        <% end %>
+	      </tbody>
+
+	    </table>
+
 </body>
 </html>

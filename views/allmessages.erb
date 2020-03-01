@@ -1,0 +1,36 @@
+<html>
+<head>
+    
+</head>
+
+<body>
+
+    <h2>Сообщения от клиентов</h2>
+    <p>Просмотр списка сообщений Barber Shop</p>
+
+	<div class="bs-example" data-example-id="bordered-table">
+	    <table class="table table-bordered">
+	      
+	      <thead>
+	        <tr>
+	          <th>Имя</th>
+			  <th>Почта</th>
+			  <th>Сообщение</th>
+	        </tr>
+	      </thead>
+	      
+	      <tbody>
+	      	<% @result.each do |row| %>
+	        <tr>
+	          <td><%= row['user_name'] %></td>
+	          <td><%= row['user_mail'] %></td>
+	          <td><%= row['message_user'] %></td>
+	        </tr>
+	        <% end %>
+	      </tbody>
+
+	    </table>
+	  </div>
+	
+</body>
+</html>

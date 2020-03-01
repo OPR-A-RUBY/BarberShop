@@ -183,3 +183,13 @@ get '/showusers' do
     erb :showusers
     # db.close
 end
+
+get '/allmessages' do 
+      
+    db = get_db
+    
+    @result = db.execute 'SELECT * FROM db_t_contacts ORDER BY id DESC'
+
+    erb :allmessages
+    # db.close
+end
