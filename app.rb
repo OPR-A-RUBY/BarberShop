@@ -4,33 +4,43 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'sqlite3'
 
+
 def get_db
     db = SQLite3::Database.new 'BarberShop.db'
-    db.results_as_hash = true
+    db.results_as_hash = true                   # SELECTы будут в виде ХЕША.
     return db
 end
+
+
  
-def is_barber_not_exists? db, name 
+def is_barber_not_exists? db, name              # Этот барбер не существует?
     db.execute('SELECT * FROM db_t_barbers WHERE barber_name=?', [name]).length <= 0
+end                                             # Количество элементов = 0
+
+
+
+def seed_db db, name_arr                        # Наполнение db именами барберов
+    name_arr.each do |item|                     # Перебрать все имена барберов
+        if is_barber_not_exists? db, item       # Если такого барбера нет, то ....
+              db.execute 'INSERT INTO db_t_barbers (barber_name) VALUES (?)', [item]
+        end                                     # ... внести item барбера в базу db.
+    end    
 end
 
-def seed_db db, name_arr
-    name_arr.each do |item|
-        if is_barber_not_exists? db, item 
-              db.execute 'INSERT INTO db_t_barbers (barber_name) VALUES (?)', [item]
-        end    
-    end    
-end    
 
+# метод before исполняется перед каждым запросом GET или POST ======================
 before do
-    db = get_db
+    db = get_db                                 # Получение хеша из таблицы барберов
     @barbers = db.execute 'SELECT * FROM db_t_barbers'
 end
 
+
+# метод выполняется при старте sinatra =============================================
 configure do
     db = get_db
-
-    db.execute 'CREATE TABLE IF NOT EXISTS 
+                                         # Создать таблицу для записи в Barber Shop
+                                         # если такая не существует    
+    db.execute 'CREATE TABLE IF NOT EXISTS       
         "db_t_visit" 
         (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -40,7 +50,8 @@ configure do
             "barber" TEXT,
             "color" TEXT
         )'
-
+                                         # Создать таблицу для записи отзывов
+                                         # если такая не существует    
     db.execute 'CREATE TABLE IF NOT EXISTS 
         "db_t_contacts" 
         (
@@ -49,62 +60,66 @@ configure do
             "user_mail" TEXT,
             "message_user" TEXT
         )'
-
+                                         # Создать таблицу для барберов
+                                         # если такая не существует    
     db.execute 'CREATE TABLE IF NOT EXISTS 
         "db_t_barbers" 
         (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             "barber_name" TEXT NOT NULL
         )'
-
+                                                # список всех барберов 
     barbers_arr = ['Jessie Pinkman', 'Wolter White', 'Gas Fring']  
     
-    seed_db db, barbers_arr
+    seed_db db, barbers_arr                     # наполнить db всеми барберами
 
     # db.close    
 end    
+
 
 get '/' do
     erb "Hello! <a href=\"https://github.com/bootstrap-ruby/sinatra-bootstrap\">Original</a> pattern has been modified for <a href=\"http://rubyschool.us/\">Ruby School</a>"
 end
 
 get '/about' do
-    @error = "somephing wrong!"    # Пример вывода ошибки
+    @error = "somephing wrong!"                 # Пример вывода ошибки
     erb :about
 end
+
 
 get '/visit' do
     erb :visit
 end
 
 post '/visit' do
-
+                                        # Данные из формы представления visit.erb
+                                        # теперь становятся переменными этого метода
     @user_name = params[:user_name]
     @phone     = params[:phone]
     @date_time = params[:date_time]
     @barber    = params[:barber]
     @color     = params[:color]
-
+                                        # Хеш для сообщений о необходимости дозаполнить
+                                        # форму в visit.erb для записи клиента к барберу.
     hh = {  :user_name => 'Введите имя ',
                 :phone => 'Введите номер телефона ',
             :date_time => 'Введите дату и время ' }
 
-    # Для каждой пары ключ-значение
+    # Для каждой пары ключ-значение делать:
     hh.each do |key, value|
-        # если параметр пуст
+        # если параметр из формы не заполнен (пустой)
         if params[key] == ''
-            # переменной error присвоить союе value из хеша hh
-            # т.е переменной error присвоить сообщение об ошибке
+            # то переменной error присвоить союе value из хеша hh
+            # т.е переменной error присвоить сообщение об ошибке по даному параметру
             @error = hh[key]
-            return erb :visit
+            return erb :visit   # вернуться в форму для ввода недостающего параметра 
         end
     end
-
 
     @title = 'Спасибо!'
     @message = "Спасибо вам, #{@user_name}, будем ждать Вас."
   
-    db = get_db
+    db = get_db                         # Внести данные базу, таблица db_t_visit
     db.execute 'INSERT INTO db_t_visit 
         (
             user_name, 
@@ -115,13 +130,13 @@ post '/visit' do
         ) 
         VALUES ( ?, ?, ?, ?, ?)', 
         [
-            @user_name, 
-            @phone, 
+            @user_name,                 # порядок здесь должен соответствовать
+            @phone,                     # порядку в запросе INSERT (выше)
             @date_time, 
             @barber,
             @color
         ]    
-    db.close
+    # db.close
 
     erb :message
 
@@ -133,10 +148,14 @@ end
 
 
 post '/contacts' do
+                                        # Данные из формы представления contacts.erb
+                                        # теперь становятся переменными этого метода
     @user_name      = params[:user_name]
     @user_mail      = params[:user_mail]
     @message_user   = params[:message_user]
 
+                                        # Хеш для сообщений о необходимости дозаполнить
+                                        # форму в contacts.erb для отправки сообщения.
     hh = {  :user_name => 'Вы не указали имя ',
             :user_mail => 'Вы не указали адрес для ответа ',
             :message_user => 'Текст Вашего сообщения не найден ' }
@@ -174,20 +193,20 @@ post '/contacts' do
 end
 
 
-get '/showusers' do 
+get '/showusers' do     # вывод списка записавшихся 
       
-    db = get_db
-    
+    db = get_db         # это массив хешей всей таблицы db_t_visit 
+                        # отсортированный обратным порядком по id
     @result = db.execute 'SELECT * FROM db_t_visit ORDER BY id DESC'
 
     erb :showusers
     # db.close
 end
 
-get '/allmessages' do 
+get '/allmessages' do   # вывод списка всех сообщений от пользователей
       
-    db = get_db
-    
+    db = get_db         # это массив хешей всей таблицы db_t_contacts 
+                        # отсортированный обратным порядком по id
     @result = db.execute 'SELECT * FROM db_t_contacts ORDER BY id DESC'
 
     erb :allmessages
