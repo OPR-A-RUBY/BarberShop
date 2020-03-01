@@ -9,9 +9,22 @@ def get_db
     db.results_as_hash = true
     return db
 end
+ 
+def is_barber_not_exists? db, name 
+    db.execute('SELECT * FROM db_t_barbers WHERE barber_name=?', [name]).length <= 0
+end
+
+def seed_db db, name_arr
+    name_arr.each do |item|
+        if is_barber_not_exists? db, item 
+              db.execute 'INSERT INTO db_t_barbers (barber_name) VALUES (?)', [item]
+        end    
+    end    
+end    
 
 configure do
     db = get_db
+
     db.execute 'CREATE TABLE IF NOT EXISTS 
         "db_t_visit" 
         (
@@ -31,7 +44,19 @@ configure do
             "user_mail" TEXT,
             "message_user" TEXT
         )'
-    db.close    
+
+    db.execute 'CREATE TABLE IF NOT EXISTS 
+        "db_t_barbers" 
+        (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            "barber_name" TEXT NOT NULL
+        )'
+
+    barbers_arr = ['Jessie Pinkman', 'Wolter White', 'Gas Fring']  
+    
+    seed_db db, barbers_arr
+
+    # db.close    
 end    
 
 get '/' do
@@ -148,7 +173,7 @@ get '/showusers' do
       
     db = get_db
     
-    @result = db.execute 'SELECT * FROM db_t_visit'
+    @result = db.execute 'SELECT * FROM db_t_visit ORDER BY id DESC'
 
     # db.execute 'SELECT * FROM db_t_visit' do |row|
     #     puts "#{row['user_name']} \t #{row['phone']}"
