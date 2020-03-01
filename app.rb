@@ -181,5 +181,5 @@ get '/showusers' do
     @result = db.execute 'SELECT * FROM db_t_visit ORDER BY id DESC'
 
     erb :showusers
-    db.close
+    # db.close
 end
